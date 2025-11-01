@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kamus Bahasa Batak | Gorga Nusantara</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <style>
+:root {
+    --batak-red: #8B0000;
+    --batak-dark: #2C1810;
+    --batak-gold: #D4A017;
+    --batak-cream: #FDF6E3;
+    --batak-purple: #4A148C;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #f9f3e8, #fdf6e3);
+    color: #2C1810;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  
+  /* GORGA BACKGROUND */
+  .gorga-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path fill="%23D4A017" opacity="0.08" d="M60 10 L70 30 L90 30 L75 45 L85 65 L60 50 L35 65 L45 45 L30 30 L50 30 Z"/><path fill="%23D4A017" opacity="0.08" d="M20 50 L30 70 L50 70 L35 85 L45 105 L20 90 L0 105 L10 85 L0 70 L15 70 Z" transform="translate(80,0)"/></svg>') repeat;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  header {
+    background: linear-gradient(135deg, var(--batak-red), var(--batak-purple));
+    color: white;
+    text-align: center;
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(139, 0, 0, 0.3);
+  }
+  
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60"><path fill="none" stroke="%23D4A017" stroke-width="3" opacity="0.3" d="M0,30 Q50,10 100,30 T200,30"/></svg>') center/100% 100% no-repeat;
+    pointer-events: none;
+  }
+  
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+  
+  header p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .container {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  /* CARD BAHASA */
+  .language-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .lang-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 3px solid transparent;
+  }
+  
+  .lang-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 8px;
+    background: linear-gradient(90deg, var(--batak-gold), var(--batak-red), var(--batak-gold));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .lang-card:hover::before { opacity: 1; }
+  .lang-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(139, 0, 0, 0.2);
+    border-color: var(--batak-gold);
+  }
+  
+  .lang-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+  
+  .lang-card h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--batak-red);
+    margin: 0.8rem 0;
+    font-size: 1.6rem;
+  }
+  
+  .lang-card p {
+    color: #555;
+    font-size: 0.95rem;
+  }
+  
+  /* DICTIONARY PAGE */
+  .dictionary-page {
+    display: none;
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .back-btn {
+    background: var(--batak-dark);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    margin-bottom: 1.5rem;
+  }
+  
+  .back-btn:hover {
+    background: #000;
+    transform: translateX(-5px);
+  }
+  
+  .search-box {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 2px solid #ddd;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s;
+    background: #fdf6e3;
+  }
+  
+  .search-box:focus {
+    outline: none;
+    border-color: var(--batak-red);
+    box-shadow: 0 0 0 4px rgba(139, 0, 0, 0.15);
+    background: white;
+  }
+  
+  .alphabet-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
+    justify-content: center;
+    padding: 0.5rem;
+    background: #f8f0e0;
+    border-radius: 16px;
+  }
+  
+  .alpha-btn {
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--batak-red);
+    background: transparent;
+    color: var(--batak-red);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .alpha-btn.active,
+  .alpha-btn:hover {
+    background: var(--batak-red);
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.2rem;
+  }
+  
+  .word-card {
+    background: linear-gradient(135deg, #fff, #fdf6e3);
+    border-radius: 16px;
+    padding: 1.4rem;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--batak-gold);
+  }
+  
+  .word-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    border-left-color: var(--batak-red);
+  }
+  
+  .word-indo {
+    font-weight: 700;
+    color: var(--batak-dark);
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+  
+  .word-batak {
+    color: var(--batak-red);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .no-words {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-style: italic;
+    background: #fdf6e3;
+    border-radius: 16px;
+    border: 2px dashed #ccc;
+  }
+  
+  .search-result {
+    background: linear-gradient(135deg, #fff8e1, #fdf6e3);
+    border-left: 5px solid var(--batak-gold);
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 12px 12px 0;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  footer {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--batak-dark);
+    color: #ccc;
+    font-size: 0.95rem;
+    margin-top: 4rem;
+  }
+  
+  @media (max-width: 768px) {
+    header h1 { font-size: 2.2rem; }
+    .language-grid { grid-template-columns: 1fr; }
+    .word-grid { grid-template-columns: 1fr; }
+    .word-batak { font-size: 1rem; }
+  }
+  </style>
+</head>
+<body>
+
+  <div class="gorga-bg"></div>
+
+  <header>
+    <h1>Kamus Bahasa Batak</h1>
+    <p>Warisan budaya dalam genggaman — Toba • Karo • Simalungun</p>
+  </header>
+
+  <div class="container">
+
+    <!-- PILIHAN BAHASA -->
+    <section id="languageSelection">
+      <div class="language-grid">
+        <div class="lang-card" onclick="showDictionary('toba')">
+          <svg class="lang-icon" viewBox="0 0 100 100" fill="none" stroke="#8B0000" stroke-width="3">
+            <path d="M50 15 L60 35 L80 35 L65 50 L75 70 L50 55 L25 70 L35 50 L20 35 L40 35 Z"/>
+            <circle cx="50" cy="45" r="8" fill="#D4A017"/>
+          </svg>
+          <h2>Batak Toba</h2>
+          <p>Kamus Indonesia → Batak Toba</p>
+        </div>
+        <div class="lang-card" onclick="showDictionary('karo')">
+          <svg class="lang-icon" viewBox="0 0 100 100" fill="none" stroke="#8B0000" stroke-width="3">
+            <rect x="30" y="25" width="40" height="50" rx="8"/>
+            <path d="M35 40 L50 55 L65 40" stroke-width="4"/>
+            <circle cx="50" cy="35" r="6" fill="#D4A017"/>
+          </svg>
+          <h2>Batak Karo</h2>
+          <p>Kamus Indonesia → Batak Karo</p>
+        </div>
+        <div class="lang-card" onclick="showDictionary('simalungun')">
+          <svg class="lang-icon" viewBox="0 0 100 100" fill="none" stroke="#8B0000" stroke-width="3">
+            <path d="M50 20 L65 40 L60 60 L40 60 L35 40 Z"/>
+            <path d="M50 45 L58 55 M50 45 L42 55" stroke-width="2"/>
+            <circle cx="50" cy="35" r="7" fill="#D4A017"/>
+          </svg>
+          <h2>Batak Simalungun</h2>
+          <p>Kamus Indonesia → Batak Simalungun</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KAMUS TOBA -->
+    <section id="dictionaryToba" class="dictionary-page">
+      <button class="back-btn" onclick="goBack()">Back</button>
+      <h2 style="text-align:center; margin:1.5rem 0; color:var(--batak-red); font-family:'Cinzel',serif;">
+        Kamus Batak Toba
+      </h2>
+      <input type="text" class="search-box" id="searchToba" placeholder="Cari kata dalam Bahasa Indonesia..." onkeyup="searchWord('toba')">
+      <div id="searchResultToba"></div>
+      <div class="alphabet-filter" id="alphaToba"></div>
+      <div class="word-grid" id="wordListToba"></div>
+    </section>
+
+    <!-- KAMUS KARO -->
+    <section id="dictionaryKaro" class="dictionary-page">
+      <button class="back-btn" onclick="goBack()">Back</button>
+      <h2 style="text-align:center; margin:1.5rem 0; color:var(--batak-red); font-family:'Cinzel',serif;">
+        Kamus Batak Karo
+      </h2>
+      <input type="text" class="search-box" id="searchKaro" placeholder="Cari kata dalam Bahasa Indonesia..." onkeyup="searchWord('karo')">
+      <div id="searchResultKaro"></div>
+      <div class="alphabet-filter" id="alphaKaro"></div>
+      <div class="word-grid" id="wordListKaro"></div>
+    </section>
+
+    <!-- KAMUS SIMALUNGUN -->
+    <section id="dictionarySimalungun" class="dictionary-page">
+      <button class="back-btn" onclick="goBack()">Back</button>
+      <h2 style="text-align:center; margin:1.5rem 0; color:var(--batak-red); font-family:'Cinzel',serif;">
+        Kamus Batak Simalungun
+      </h2>
+      <input type="text" class="search-box" id="searchSimalungun" placeholder="Cari kata dalam Bahasa Indonesia..." onkeyup="searchWord('simalungun')">
+      <div id="searchResultSimalungun"></div>
+      <div class="alphabet-filter" id="alphaSimalungun"></div>
+      <div class="word-grid" id="wordListSimalungun"></div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>© 2025 <strong>Kamus Bahasa Batak</strong> | Melestarikan Warisan Budaya Nusantara</p>
+    <p>Dibuat dengan cinta <span style="color:#e74c3c;"></span> untuk generasi Batak</p>
+  </footer>
+
+  <!-- Load Data & Script -->
+  <script>
+const dictionaries = {
+    toba: {
+      // === HURUF A ===
+      "Aha" : "apa",
+      "Amang" : "Ayah / Bapak",
+      "Anakkon" : "Anakku",
+      "Alai" : "Tetapi",
+      "Asa" : "Supaya / Agar Biasanya untuk menyatakan harapan",
+      "Akka" : "Para / Sekelompok",
+      "Ate" : "Hati",
+      "Aha dohot i" : "Apa dan itu",
+      "Amanta" : "Ayah kita / Bapak",
+      "Asing" : "Orang lain",
+      "Ate-ate" : "Lembut hati",
+      "Adong" : "Ada",
+      "Andung" : "Ratapan / Tangisan",
+      "Andulau" : "Luar / Sebelah luar",
+      "Aha do pangalaho" : "Apa pekerjaanmu",
+      "Ampuna" : "Maafkan Bentuk permohonan maaf.",
+      "Ari" : "Hari",
+      "Anju" : "Ke sana",
+
+      // === HURUF B ===
+      "Baba" : "membawa",
+      "Bajong" : "Berteriak",
+      "Balga" : "Bangga",
+      "Balgaon" : "Kebanggaan Bentuk nomina dari kata balga.",
+      "Balian" : "sawah",
+      "Balung" : "Tulang Bagian keras yang menyusun tubuh makhluk hidup.",
+      "Bana" : "Sangat",
+      "Barita" : "Berita/ Kabar",
+      "Batih" : "Kepala keluarga",
+      "Begu" : "Arwah / Roh",
+      "Boi" : "bisa",
+      "Borhat" : "Pergi",
+      "Borngin" : "Malam",
+      "Boru" : "anak perempuan",
+      "Bukkit" : "Bukit Tanah",
+      "Bulung" : "Daun",
+      "Bulus" : "Licik",
+      "Bukka" : "Membuka",
+      "Bungot" : "Mulut",
+      "Burju" : "Baik hati",
+      "Buru" : "Mengejar",
+
+    // ==== HURUF C ===
+    "Cincang" : "Potong kecil-kecil",
+    "Ceritahon" : "Ceritakan",
+    "Cawan" : "Mangkok kecil",
+
+    // === HURUF D ===
+    "Dainang" : "Ibu (sapaan halus untuk ibu)",
+    "Dongan" : "Teman / Sahabat",
+    "Dalihan" : "Tungku (juga bermakna “pondasi adat”)",
+    "Debata" : "Tuhan / Allah",
+    "Dohot" : "Dan / Bersama",
+    "Domu" : "Berkumpul / Bertemu",
+    "Dung" : "Sesudah / Setelah",
+    "Dolok" : "Gunung",
+    "Jalan" : "Jalan",
+    "Dang" : "Tidak / Bukan",
+    "Di ho" : "Padamu / Kepadamu",
+    "Disi" : "Di situ / Di sana",
+    "Dungkon" : "Baru saja / Sesudah itu",
+    "Duma" : "Tinggal / Hanya",
+    "Denggan" : "Baik / Bagus",
+
+    // === HURUF E ===
+    "Eme" : "Padi",
+    "Etong" : "Hitung",
+    "Eang" : "Longgar / Kendur",
+    "Elek" : "Rayu / Bujuk",
+    "Esa" : "Satu",
+    "Etek" : "Adik (perempuan, sebutan akrab)",
+    "Erak" : "Ajak / Undang",
+    "Erang" : "Terang / Jelas",
+    "Esi" : "Isi",
+    "Enteng" : "Ringan",
+    "Etor" : "Tegak / Berdiri",
+    "Elek-elek" : "Merayu dengan lembut",
+    "Ersada" : "Bersatu",
+    "Erpangir" : "Mandi adat (membersihkan diri secara tradisional)",
+    "Etek-etek" : "Saudara perempuan kecil / adik kecil",
+
+    // === HURUF F ===
+
+    "Fangke" : "Tangke / Ember kecil (kata serapan modern)",
+    "Fangolu" : "Menghidupkan / Memberi kehidupan",
+    "Fahot" : "Dapat / Mampu (bentuk variasi dari sahot)",
+    "Fangido" : "Meminta / Memohon",
+    "Fangkir" : "Gelas (serapan dari bahasa Indonesia)",
+    "Fangolihon" : "Menghidupkan / Menyalakan",
+    "Fanjar" : "Gantung",
+    "Fangkehon" : "Menciduk / Menimba air",
+    "Fahotan" : "Kemampuan / Kekuatan",
+    "Fampulu" : "Puluhan (bilangan)",
+    "Fangoluon" : "Kehidupan",
+    "Fangkeang" : "Penadah air hujan",
+    "Fanom" : "Minum (bentuk variasi lokal)",
+    "Fangidoan" : "Permintaan / Doa",
+    "Fangihut" : "Mengikuti",
+
+    // === HURUF G ===
+
+    "Gabe" : "sukses, jadi",
+    "Galas" : "gelas",
+    "Goar" : "nama",
+    "Godang" : "banyak, berlimpah",
+    "Gaor" : "berkerumunan/ ramai",
+    "Gorga" : "nilai tersirat",
+    "Gombung" : "menggelembung, buncit",
+    "Gambe" : "cepat/tangkas",
+    "Gogo" : "kuat",
+    "Gamir" : "cair",
+    "Ganjang" : "panjang",
+    "Gilo" : "lari",
+    "Gombur" : "keruh atau berlumpur",
+    "Goar" : "nama",
+    "Garar" : "membayar/melunasi",
+
+    // === HURUF H ===
+
+    "Horas" : "salam atau ucapan selamat",
+    "Holong" : "Cinta",
+    "Habang" : "Terbang",
+    "Habur" : "putih",
+    "Habahaba" : "angin ribut",
+    "Hamu" : "kalian",
+    "Huta" : "kampung atau desa",
+    "Hita" : "kita",
+    "Hau" : "kayu",
+    "Hasian" : "kekasih",
+    "Horbo" : "kerbau",
+    "Huting" : "kucing",
+    "Holan" : "hanya",
+    "Hangoluan" : "kehidupan",
+    "Hata" : "kata",
+
+    // === HURUF I ===
+
+    "Inang" : "ibu",
+    "Inum" : "minum",
+    "Ipon" : "gigi",
+    "Ito" : "sapaan untuk saudara perempuan dari saudara laki-laki",
+    "Ise" : "siapa",
+    "Ingot" : "ingat",
+    "Ibotò" : "saudara kandung atau saudara seibu/sebapa",
+    "Ibana" : "dia (kata ganti orang ketiga tunggal)",
+    "Ibana" : "dia (kata ganti orang ketiga tunggal)",
+    "Iluk" : "air mata",
+    "Ipi" : "mimpi",
+    "Imbaru" : "baru",
+    "Idop" : "kacang",
+    "Ilo" : "malas",
+    "Ido" : "begitu/itu",
+
+    // === HURUF J ===
+    "Jabu" : "Rumah",
+    "Juma" : "Ladang, Kebun",
+    "Jongjong" : "Berdiri",
+    "Jonggol" : "Tonjolan, Jambul",
+    "Jojor" : "Berderet, Berurut",
+    "Jadi" : "Jadi, Menjadi",
+    "Jolo" : "Depan, Muka",
+    "Jambar" : "Bagian (daging/rezeki)",
+    "Jagal" : "Penjual daging, Jagal (pekerjaan)",
+    "Jangak" : "Serakah, Tidak senonoh",
+    "Joloan" : "Bagian depan",
+    "Jotjot" : "Sering, Kerap",
+    "Jala" : "Jala, Juga",
+    "Jarit" : "Menangis keras, Jerit",
+    "Jagar-jagar" : "Berhati-hati",
+
+    // === HURUF K ===
+    "Kain" : "Kain",
+    "Karejo" : "Bekerja, Pekerjaan",
+    "Kopi" : "Kopi",
+    "Kuda" : "Kuda",
+    "Kamar" : "Kamar",
+    "Kapur" : "Kapur",
+    "Kabar" : "Kabar, Berita",
+    "Kua" : "Kuah",
+    "Kura-kura" : "Kura-kura",
+    "Kare" : "Rasa gatal",
+    "Koro" : "Batuk",
+    "Kareta" : "Motor",
+    "Kancil" : "Kancil",
+    "Kapal" : "Kapal",
+    "Kompleks" : "Kompleks",
+
+    // === HURUF L ===
+    "Laos" : "Selain itu, Juga",
+    "Lapatan" : "Arti, Makna",
+    "Laos" : "Jahe",
+    "Laho" : "Pergi, Akan",
+    "Lambar" : "Sepotong",
+    "Lampin" : "Lampin, Popok",
+    "Langit" : "Awan, Langit",
+    "Lapik" : "Alas, Lapisan",
+    "Las" : "Panas, Hangat",
+    "Las" : "Senang, Gembira",
+    "Lelas" : "Lelah, Capek",
+    "Leleng" : "Lama",
+    "Lihat" : "Lubang, Celah",
+    "Lolo" : "Berantakan, Tersebar",
+    "Longong" : "Terkejut, Tercengang",
+
+    // === HURUF M ===
+    "Molo" : "Kalau / Jika",
+    "Mangan" : "Makan / Memakan",
+    "Mangido" : "Meminta",
+    "Mangula" : "Bekerja / Melakukan pekerjaan",
+    "Mangolah" : "Bekerja / Melakukan pekerjaan",
+    "Mangallang" : "Makan",
+    "Allang" : "Makan",
+    "Marharoan" : "Bergotong-royong / Bekerja bersama",
+    "Marroha" : "Seia-sekata / Sehati",
+    "Marhoras" : "Sehat / Selamat (ucapan: marhoras)",
+    "Marboru" : "Pihak perempuan / Boru",
+    "Martutur" : "Menyampaikan / Berbicara dalam adat",
+    "Marhite" : "Lewat / Melalui",
+    "Marhombu" : "Menolong / Memberi pertolongan",
+    "Mangihut" : "Mengikuti",
+    "Mangampu" : "Mampu / Bisa; juga: Menolong",
+    "Mangaraja" : "Menjadi pemimpin / Raja (bentuk turunan)",
+    "Mangandung" : "Berisi / Bernyanyi sedih",
+    "Mangulahon" : "Melakukan",
+    "Mastaran" : "Berbisik",
+    "Mangaririt" : "Berbisik",
+    "Mabiar" : "Menyebabkan / Membuat",
+    "Marmasa" : "Menimbang / Memikirkan",
+    "Mardomu" : "Berkumpul",
+    "Mangaraja" : "Memerintah / Memimpin (turunan)",
+    "Maruli" : "Mulia / Terhormat",
+    "Manok" : "Ayam",
+    "Manuk" : "Ayam",
+    "Mardongan Tubu" : "Saudara sekampung / Kekerabatan",
+
+    // === HURUF N ===
+    "Na" : "Yang / Kata penentu (contoh: na uli = yang baik)",
+    "Nauli" : "Indah / Baik",
+    "Natoras" : "Leluhur / Nenek moyang",
+    "Natipak" : "Tertinggal / Ketinggalan",
+    "Nang" : "Atau / Maupun",
+    "Nampuna" : "Warisan / Peninggalan",
+    "Namboru" : "Saudara perempuan dari ayah (tante pihak ayah)",
+    "Nini" : "Nenek",
+    "Nina" : "Berkata / Berkata bahwa",
+    "Nampuna ni ruma" : "Pemilik rumah",
+    "Natorang" : "Terang / Jelas",
+    "Natuatua" : "Orang tua / Sepuh",
+    "Nipuna" : "Punya / Milik",
+    "Nanggar" : "Tempat duduk panjang / Bangku",
+    "Nidok" : "Mengatakan / Menyebut",
+    "Nida" : "Melihat / Memandang",
+    "Natorus" : "Terus menerus",
+    "Nangga" : "Tidak ada / Belum",
+    "Nini roha" : "Pikiran / Niat hati",
+    "Naeng" : "Akan / Hendak",
+    "Nampuna" : "Punya / Memiliki",
+    "Nangpe" : "Meskipun",
+    "Nungnga" : "Sudah / Telah",
+    "Nihut" : "Mengikuti / Turut",
+    "Naeng do" : "Akan lah / Hendak (bentuk kalimat predikat)",
+  
+    // === HURUF O ===
+    "Ompu" : "Kakek / Nenek / Leluhur",
+    "Ojak" : "Menarik / Menghela",
+    "Olo" : "Mau / Bersedia",
+    "Ompung" : "Nenek / Kakek",
+    "Oroan" : "Menangis pelan / Merintih",
+    "Ompunta" : "Leluhur kita",
+    "Oppung" : "Bentuk hormat untuk orang tua tua",
+    "Ompu-ompuna" : "Para leluhur / Keturunan nenek moyang",
+    "Olo do" : "Ya / Baiklah (ungkapan setuju)",
+    "Ombus" : "Tiupan angin / Embusan",
+    "Orah" : "Ratapan / Tangisan panjang",
+    "Oto" : "Bodoh",
+    "Ompung boru" : "Nenek dari pihak ibu",
+    "Ompung baoa" : "Kakek dari pihak ayah",
+    "Oro" : "Jerit / Tangis keras",
+    "On" : "Ini (kata tunjuk)",
+    "Onma" : "Inilah / Ini sekarang",
+    "Ompung ni doli" : "Leluhur laki-laki",
+    "Ompung ni boru" : "Leluhur perempuan",
+    "Ojakon" : "Tariklah",
+
+    // === HURUF P ===
+    "Poda" : "Nasihat",
+    "Pangula" : "Petani",
+    "Parhobas" : "Pelayan",
+    "Pangalaho" : "Sifat",
+    "Pinarjolo" : "Pendahuluan",
+    "Pangaranto" : "Perantau",
+    "Pasu-Pasu" : "Berkat",
+    "Pangisi" : "Pengisi",
+    "Parbagasan" : "Tempat makan bersama",
+    "Parsaoran" : "Perkumpulan",
+
+    // === HURUF R ===
+    "Roa" : "Jelek",
+    "Ronggur" : "Petir",
+    "Rura" : "Lembah",
+    "Rias" : "Memperindah",
+    "Rap" : "Bersama",
+    "Rantos" : "Tabah",
+    "Ruru" : "Aliran air",
+    "Radot" : "Mengawasi",
+    "Rihut" : "Dingin",
+    "Rokkap" : "Jodoh",
+    
+    // === HURUF S ===
+
+    "Sada" : "Satu",
+    "Sude" : "Semua",
+    "Sian" : "Dari / Daripada",
+    "Sai" : "Selalu / Sungguh / Semoga",
+    "Somba" : "Hormat / Sembah",
+    "Sahat" : "Sampai / Tiba",
+    "Suru-suru" : "Perintah / Amanat",
+    "Solu" : "Perahu",
+    "Suru" : "Menyuruh",
+    "Somba marhulahula" : "Hormati pihak hula-hula (adat Batak)",
+    "Sude halak" : "Semua orang",
+    "Sombaon" : "Disembah / Dihormati",
+    "Sundut" : "Keturunan / Garis keluarga",
+    "Sari matua" : "Orang tua yang anaknya sudah menikah semua",
+    "Sangap" : "Hormat / Penuh wibawa",
+
+    // === HURUF T ===
+
+    "Tondi" : "Roh / Jiwa",
+    "Tuan" : "Tuhan / Orang terhormat",
+    "Tubu" : "Lahir / Keturunan",
+    "Tulang" : "Paman dari pihak ayah / Tulang belakang keluarga",
+    "Tondi mardalan" : "Roh yang berjalan",
+    "Togu" : "Teguh / Kuat",
+    "Tubu" : "Lahir / Keturunan",
+    "Tupa" : "Menerima berkat / Terkena sesuatu",
+    "Togu roha" : "Kuat hati",
+    "Tutur" : "Nasihat / Garis keturunan",
+    "Tupa hata" : "Menyampaikan pesan / Mendengar kata",
+    "Tingki" : "Loncat / Lompat",
+    "Tano" : "Tanah",
+    "Tarombo" : "Silsilah / Garis marga",
+    "Togu do hita" : "Kita kuat / Tetap teguh",
+
+    // === HURUF U ===
+    "Ulos" : "Kain adat Batak, simbol kasih & berkat",
+    "Uhum" : "Hukum / Peraturan adat",
+    "Uju" : "Ujung / Akhir",
+    "Ulaon" : "Pekerjaan / Tugas",
+    "Uli" : "Indah / Bagus",
+    "Uju ni ari" : "Akhir hari / Sore hari",
+    "Uju ni roha" : "Keputusan hati / Akhir perasaan",
+    "Unang" : "Jangan / Larangan",
+    "Uju ni dolok" : "Puncak gunung",
+    "Urat" : "Urat / Akar",
+    "Uning" : "Tahu / Mengerti",
+    "Umpasa" : "Pantun / Peribahasa Batak",
+    "Uju ni jolo" : "Dulu / Masa lampau",
+    "Uju-ujung" : "Paling ujung / Tepi",
+    "Ula" : "Perbuatan / Tindakan",
+
+    // === HURUF  w ===
+    "Walu" : "Delapan",
+    },
+  
+  simalungun: {
+    // === HURUF A ===
+    "Aha": "Apa",
+    "Amang": "Ayah / Bapak",
+    "Alai": "Tetapi / Namun",
+    "Asa": "Supaya / Agar",
+    "Adong": "Ada",
+    "Anggo": "Kalau",
+    "Arsak": "Takut",
+    "Ate": "Hati",
+    "Ahul": "Pandai / Cerdas",
+    "Andung": "Ratapan",
+    "Ari": "Hari",
+    "Ampe": "Selesai / Sudah",
+    "Anso": "Supaya / Agar",
+    "Ambilan": "Teman sebaya",
+    "Ampuna": "Permohonan ampun / Maaf",
+  
+    // === HURUF B ===
+    "Baba": "Mulut",
+    "Babui": "Babi",
+    "Babeng": "Hantu",
+    "Bada": "Tengkar",
+    "Bahang": "Larang",
+    "Bahar": "Gali",
+    "Bajan": "Jelek",
+    "Bajang": "Pasung",
+    "Bahing": "Putar",
+    "Baion": "Pandan",
+    "Bala": "Musibah",
+    "Balging": "Bulat",
+    "Balua": "Kijang",
+    "Balugup": "Bodoh",
+    "Balut": "Bungkus",
+    "Bandat": "Lambat",
+    "Bani": "Pada",
+    "Bansal": "Pijak",
+    "Bantei": "Bakul",
+    "Bapa": "Bapak",
+
+    // === HURUF C ===
+    "Cahar": "Cabut",
+    "Canang": "Kalung",
+    "Capai": "Lelah",
+    "Celeng": "Babi",
+    "Cepak": "Datar",
+    "Cukuh": "Coco",
+
+    // === HURUF D ===
+    "Dainang": "Ibu",
+    "Dongan": "Teman / Sahabat",
+    "Dibata": "Tuhan",
+    "Dung": "Sesudah / Setelah",
+    "Dalan": "Jalan",
+    "Dang": "Tidak / Bukan",
+    "Dohot": "Dan / Bersama",
+    "Domma": "Sudah",
+    "Dongan tubu": "Saudara sedarah",
+    "Dalani": "Jalannya",
+    "Dungkon": "Baru saja",
+    "Dame": "Damai / Tenang",
+    "Denggan": "Baik / Bagus",
+    "Dapot": "Dapat / Mendapatkan",
+    "Dohotta": "Kita / Kita semua",
+
+    // === HURUF E ===
+    "Eme": "Padi",
+    "Etong": "Hitung",
+    "Elek": "Rayu / Bujuk",
+    "Esa": "Satu",
+    "Etek": "Adik (perempuan)",
+    "Eang": "Longgar / Kendur",
+    "Ersada": "Bersatu",
+    "Erbagi": "Berbagi",
+    "Erpangalohon": "Menghidupkan / Menyalakan",
+    "Erkata": "Berbicara",
+    "Erpanggel": "Memanggil",
+    "Erpukpuk": "Menepuk / Memukul pelan",
+    "Ersema": "Bersama",
+
+    // === HURUF F ===
+    "Fampodahon": "Menguatkan / Meneguhkan",
+    "Fanggel": "Gantung",
+  
+    // === HURUF G ===
+    "Gabar": "Takut",
+    "Gabgab": "Makan",
+    "Gabur": "Lunak",
+    "Gajang": "Panjang",
+    "Galto": "Besar",
+    "Galuh": "Pisang",
+    "Ganggu": "Bimbang",
+    "Gapang": "Merangkak",
+    "Gaor": "Aduk",
+    "Gaot": "Gugup",
+    "Gantong": "Gantung",
+    "Gayak": "Lembek",
+    "Gana": "Patung",
+    "Gamot": "Pegawai",
+    "Galas": "Gelas",
+
+    // === HURUF H ===
+  "Habur": "Terbang",
+  "Habong": "Sayap",
+  "Hadang": "Kandang",
+  "Habus": "Kikis",
+  "Habut": "Susah",
+  "Haer": "Menyapu",
+  "Haerhon": "Cakar",
+  "Hagar": "Musim",
+  "Hae": "Keladi",
+  "Hamat": "Hormat / Sopan",
+  "Hamata": "Biji",
+  "Hambar": "Tawar",
+  "Hambili": "Kacang tanah",
+  "Hambing": "Kambing",
+  "Hamkam": "Tutup",
+
+  // === HURUF I ===
+  "Igar": "Masam",
+  "Igung": "Hidung",
+  "Ila": "Malu",
+  "Ilei": "Kesal",
+  "Ilat": "Jahat",
+  "Iligi": "Jenguk",
+  "Iloh": "Padam",
+  "Imas": "Tebas",
+  "Iluh": "Air mata",
+  "Ima": "Sudah / Telah",
+  "Ingar": "Ribut",
+  "Ingot": "Ingat",
+  "Insop": "Isap",
+  "Insur": "Tajam",
+  "Inih": "Manja",
+
+  // === HURUF J ===
+  "Jabu": "Rumah",
+  "Juma": "Ladang / Kebun",
+  "Jolma": "Manusia / Orang",
+  "Jonjong": "Berdiri",
+  "Jadi": "Jadi / Menjadi",
+  "Jagar": "Kuat / Gagah",
+  "Juma-juma": "Sawah",
+  "Jolou": "Depan",
+  "Jonggor": "Kepala",
+  "Jarang": "Jarang",
+  "Jujur": "Jujur",
+  "Janjan": "Bingkai / Rangka",
+  "Jajai": "Teliti / Periksa",
+  "Jambulan": "Rambut panjang / Jambul",
+  "Janjam": "Gelap / Suram",
+  
+  // === HURUF K ===
+  "Kaha": "Kakak",
+  "Kajang": "Tikar",
+  "Kambang": "Bunga",
+  "Kampiun": "Juara",
+  "Kareh": "Besok / Nanti",
+  "Kuli-kuli": "Kulit",
+  "Kuria": "Jemaat gereja",
+  "Kacap": "Cekatan / Lincah",
+  "Karing": "Kering",
+  "Kira": "Hitung / Sangka",
+  "Kambona": "Tempat asal",
+  "Kual": "Kuat / Gagah",
+  "Kukut": "Sempit / Terhimpit",
+  "Kunjung": "Bertemu / Berkunjung",
+  "Karosi": "Kursi",
+  
+  // === HURUF L ===
+  "Lage": "Tikar",
+  "Labei": "Tempat perangkap",
+  "Ladung": "Dusta",
+  "Lagut": "Berlumur",
+  "Lais": "Tampan",
+  "Lai": "Hormat",
+  "Lajur": "Butir padi",
+  "Lajoh": "Lemah lembut",
+  "Lampo-lampo": "Tempat berteduh sementara",
+  "Lampang": "Mengganggu",
+  "Landung": "Tahi lalat",
+  "Lanang": "Makanan bergizi",
+  "Lantos": "Pintar",
+  "Lasa-lasa": "Dibayang-bayangkan",
+  "Lapung": "Hampa",
+
+      // === HURUF M ===
+  "Mangan" : "Makan",
+  "Mature": "Duduk / Tenang",
+  "Marsaor": "Hidup rukun / Hidup bersama dengan rukun",
+  "Mardomu": "Berkumpul / Berjumpa",
+  "Mardomu-domu": "Berkumpul / Pesta pertemuan",
+  "Marharoan": "Bekerja bersama / Gotong royong",
+  "Marroha": "Sehati / Seia-sekata",
+  "Marhite": "Lewat / Melalui",
+  "Marhombu": "Menolong / Membantu",
+  "Marpege": "Menemani / Mengiringi",
+  "Marpudun": "Menurunkan / Memberikan",
+  "Mase": "Cantik / Manis",
+  "Masean": "Cantik / Manis",
+  "Mangihut": "Mengikuti",
+  "Mangampu": "Menolong / Mampu",
+  "Marjolo": "Terlebih dahulu / Duluan",
+  "Mardusa": "Berkabung / Sedih",
+  "Mangaraja": "Memimpin",
+  "Mangelem": "Gelap / Hitam",
+  "Marhasuhuton": "Menjadi tuan rumah / Penyelenggara adat",
+  "Manggabe": "Membuat makmur / Membuat sejahtera",
+  "Mangolu": "Pergi",
+  "Mangiuh": "Minum",
+  "Mannang": "Menang",
+  "Maringgat": "Bangkit / Berdiri",
+  
+  // === HURUF N ===
+  "Na": "Ang",
+  "Nauli": "Indah / Bagus",
+  "Nihut": "Mengikuti",
+  "Nimpa": "Menimpa",
+  "Nini": "Nenek",
+  "Nangpe": "Walaupun",
+  "Naeng": "Akan / Hendak",
+  "Nungga": "Sudah",
+  "Natoras": "Leluhur",
+  "Nida": "Melihat",
+  "Nihita": "Kita lihat / Kita perhatikan",
+  "Ningon": "Dengan / Bersama",
+  "Nanting": "Mengangkat / Menjemput",
+  "Nanggar": "Bangku / Kursi panjang",
+  "Nammor": "Banyak / Melimpah",
+  "Nimpaon": "Menimpa sesuatu",
+  "Nampuna": "Punya / Milik",
+  "Natean": "Dapat / Mampu",
+  "Nini tolu": "Tiga nenek (ungkapan kekerabatan)",
+  "Nisuan": "Dikasihi / Dicintai",
+  "Nihita do": "Mari kita lihat",
+  "Naimbaru": "Yang baru",
+  "Nang": "Atau",
+  "Nihut ma": "Ikutilah",
+  "Nauli roha": "Baik hati",
+
+  // === HURUF O ===
+  "Ompu": "Leluhur / Kakek / Nenek",
+  "Olo": "Mau / Bersedia",
+  "On": "Ini",
+  "Onma": "Inilah / Sekarang ini",
+  "Ojak": "Menarik",
+  "Ompung": "Orang tua / Leluhur",
+  "Ompuna": "Milik leluhur",
+  "Oro": "Jerit tangis",
+  "Oroan": "Merintih / Menangis pelan",
+  "Orah": "Ratapan panjang",
+  "Ompungta": "Leluhur kita",
+  "Ompungni": "Leluhur dari (misal: Ompungni Doli = kakek dari pihak ayah)",
+  "Ombus": "Tiupan angin",
+  "Ompu i": "Leluhur itu",
+  "Olo do": "Baiklah / Setuju",
+  "Oloon": "Kebaikan / Kemauan baik",
+  "Onma i": "Sekarang ini / Saat ini",
+  "Ompung boru": "Nenek dari pihak perempuan",
+  "Ompung baoa": "Kakek dari pihak laki-laki",
+  "Olo marharoan": "Suka bekerja / Rajin",
+  
+  // === HURUF P ===
+  "Pamatang": "Bukit kecil",
+  "Pitu": "Tujuh",
+  "Paturut": "Biarkan",
+  "Pentar": "Pintar",
+  "Pinggung": "Jongkok",
+  "Pogos": "Miskin",
+  "Potol": "Pegang",
+  "Poti": "Peti",
+  "Potei": "Petai",
+  "Pungil": "Merajuk",
+
+  // === HURUF R ===
+      "rupat": "rusak",
+      "rek rek": "papan tempat barang",
+      "renges": "nyenyak",
+      "rokam": "cetak",
+      "rumbak": "roboh",
+      "rung": "rebahan",
+      "roho": "rokok",
+      "rombuk": "tumbuk",
+      "rohat": "lengket",
+      "rimis": "gerimis",
+
+  // === HURUF S ===
+  "Sada": "Satu",
+  "Sahat": "Sampai / Tiba",
+  "Sangkap": "Lengkap / Sempurna",
+  "Sian": "Dari / Daripada",
+  "Sude": "Semua / Seluruh",
+  "Somba": "Hormat / Sembah",
+  "Sattabi": "Permisi / Mohon izin",
+  "Sambua": "Jawaban / Balasan",
+  "Sangkep": "Lengkap / Menyatu",
+  "Simalungun": "Nama daerah / suku",
+  "Sibahen": "Dibuat / Dilakukan",
+  "Sipaet": "Sebab / Karena",
+  "Suru-suru": "Pesan / Amanat",
+  "Suan": "Tanam",
+  "Sungkun-sungkun": "Bertanya",
+
+  // === HURUF T ===
+  "Tondi": "Jiwa / Roh",
+  "Tuan": "Orang terhormat",
+  "Tubu": "Lahir / Keturunan",
+  "Tangan": "Tangan",
+  "Tahi": "Pergi / Jalan",
+  "Tuhu": "Benar / Sungguh",
+  "Tahi roha": "Kemauan / Niat hati",
+  "Tondi bolon": "Roh besar / Semangat hidup",
+  "Tua": "Tua / Dewasa",
+  "Tingki": "Tangis / Menangis",
+  "Tampul": "Depan / Hadapan",
+  "Tarsongon": "Seperti / Menyerupai",
+  "Tarpaima": "Diterima",
+  "Tahi domma": "Sudah pergi",
+  "Tonding": "Nyawa / Roh halus",
+
+  // === HURUF U ===
+  "Ulos": "Kain adat (simbol kasih & berkat)",
+  "Uhum": "Hukum / Peraturan",
+  "Uju": "Ujung / Akhir",
+  "Uli": "Indah / Cantik",
+  "Unang": "Jangan",
+  "Uning": "Tahu / Mengerti",
+  "Ulaon": "Pekerjaan / Tugas",
+  "Uju ni ari": "Ujung hari / Sore hari",
+  "Urat": "Urat / Akar",
+  "Ulu": "Kepala / Hulu",
+  "Uju ni dolok": "Puncak gunung",
+  "Uhum ni raja": "Hukum raja / Adat",
+  "Uju ni roha": "Akhir hati / Niat hati",
+  "Umpama": "Perumpamaan",
+  "Ura": "Cerita / Kisah",
+
+  // === HURUF W ===
+  "Wa": "Huruf keenam dalam aksara Simalungun",
+  "Wajip": "Wajib"
+    },
+  
+    karo: {
+      // === HURUF A ===
+      "ajangmu": "bagianmu",
+      "aloken": "terima",
+      "alu mehamat": "dengan hormat",
+      "amak": "tikar / ibu",
+      "anjar": "pelan",
+      "awah lawah": "laba-laba",
+      "awak": "pinggang",
+      "a'yo": "muka",
+      "adi": "adik",
+      "andingan": "tempat",
+      "aka": "apa",
+      "ari": "hari",
+      "akrin": "teman / sahabat",
+      "anak": "anak",
+  
+      // === HURUF B ===
+      "babah": "mulut",
+      "bahing": "jahe",
+      "baleng": "batas",
+      "bali": "sama",
+      "banci": "boleh",
+      "bayak": "kaya",
+      "beg": "hantu",
+      "belanga": "kuali",
+      "belkih": "rusa",
+      "beltek": "perut",
+      "beluh": "bisa",
+      "bencah": "basah",
+      "bengkala": "kera",
+      "bengket": "masuk",
+      "benter": "lempar",
+      "berngi": "malam",
+      "biang": "anjing",
+      "bibi": "tante",
+      "bilacan": "terasi",
+      "binaga": "jualan",
+      "bolang": "kakek",
+      "bujur": "terima kasih",
+      "buk": "rambut",
+      "buluh": "bambu",
+      "bulung": "daun",
+
+      // === HURUF C ===
+      "ceda": "rusak",
+      "ceda ate": "dukacita",
+      "cidur": "ludah",
+      "cimen": "timun",
+      "cina": "cabai",
+      "cirem": "senyum",
+      "cuping": "telinga",
+
+      // === HURUF D ===
+      "dahin": "dekat",
+      "dahinena": "kedekatannya",
+      "dahinpe": "meski dekat",
+      "dalan": "jalan",
+      "dage": "kalau / jika",
+      "dahin-dahin": "pelan-pelan",
+      "dalanen": "jalannya",
+      "dahinndu": "dekatmu",
+      "dilo": "tidur",
+      "dibata": "tuhan",
+      "dahin ku": "di dekatku",
+      "dalanken": "menjalankan / melalui",
+      "dube": "nanti / belum",
+      "dung": "sesudah / setelah",
+      "dohenta": "keluarga kita / saudara kita",
+
+      // === HURUF E ===
+      "erban": "membawa",
+      "erbahan": "berbaring / tiduran",
+      "erbeluh": "bekerja keras / bersusah payah",
+      "erbuka": "terbuka",
+      "erjabu": "menikah",
+      "erkata": "berbicara",
+      "erkurung": "tertutup",
+      "erbagi": "berbagi",
+      "erkuat": "kuat / teguh",
+      "erpanggel": "memanggil",
+      "erpake": "memakai",
+      "erpola": "berjalan / melangkah",
+      "erpindah": "pindah tempat",
+      "erpukul": "memukul",
+      "erpunguan": "perkumpulan / perhimpunan",
+
+      // === HURUF F ===
+      "faluh": "tumpah",
+      "fangke": "ember / gayung kecil",
+      "fangkih": "naik / mendaki",
+      "fanggel": "gantung",
+      "fangido": "meminta / memohon",
+      "fangolu": "menghidupkan / menyalakan",
+      "fangkihken": "naikkan / angkat",
+      "fangkehon": "cedok / timbakan air",
+      "fanom": "minum (variasi dari inum)",
+      "fangoluhen": "hidupkan",
+      "fangidoan": "permohonan / doa",
+      "fanggelken": "gantungkan",
+      "fangoluh": "hidup",
+      "fampulu": "puluhan (bilangan)",
+      "fangkih-kih": "naik-naik (dalam arti mendaki perlahan)",
+
+      // === HURUF G ===
+      "gadung": "ubi",
+      "gadiman": "jambu kelutuk",
+      "gadang": "gudang",
+      "gajah": "gajah",
+      "galuh": "pisang",
+      "gambar": "gambir",
+      "ganda": "lipat",
+      "ganjang": "panjang",
+      "gara": "hidup",
+      "garat": "asah",
+      "gawer": "kacau",
+      "gebah": "kusut",
+      "gebuk": "asap",
+      "gediwer": "melirik",
+      "gejek": "ribut",
+
+      // === HURUF H ===
+      "harhar": "cahaya matahari",
+      "hawa": "cocok",
+      "henteng": "ringan",
+      "hijo": "hijau",
+      "her": "sambil",
+      "hiri ate": "iri hati",
+      "honteng": "menghalangi",
+      "huma": "ladang",
+      "humur": "subur",
+      "huyak": "banyak",
+      "hunggum": "agak",
+      "huli": "hamil",
+      "hile": "bersorak",
+      "hayam": "menguap",
+      "harga": "mahal",
+       
+      // === HURUF I ===
+      "ibana": "ia / dia",
+      "idzin": "izin",
+      "ijo": "hijau",
+      "ijuk": "ijuk",
+      "ila": "rasa malu",
+      "ilik": "cicak / kadal",
+      "ilu": "air mata",
+      "impola": "daging",
+      "indada": "tidak",
+      "induk": "kepala",
+      "intan": "permata",
+      "imput": "bulu pada burung",
+      "ili": "pemilih",
+      "ihut": "ikut",
+      
+      // === HURUF J ===
+      "jambur": "tempat berkumpul",
+      "janjam": "tali pengikat",
+      "jemak": "pegang",
+      "juma": "sawah / kebun",
+      "juju": "tunjuk",
+      "junjungen": "junjungan",
+      "jempek": "pendek",
+      "jabu": "rumah",
+      "ja": "mana",
+      "jering": "jengkol",
+      "jajaten": "mainan",
+      "jali-jali": "biji",
+      "jabi-jabi": "jambu-jambu / buah",
+      "jolo": "dahulu",
+      "jamak": "cara / gaya",
+  
+      // === HURUF K ===
+      "kam": "kamu / anda",
+      "kau": "apa",
+      "kaba": "pakaian / baju",
+      "kuta": "kampung / desa",
+      "kempak": "kepada / terhadap",
+      "keleng": "sayang / cinta",
+      "kite": "jembatan",
+      "karangen": "hutan",
+      "kemek": "keropos / rapuh",
+      "kati": "kira-kira",
+      "ketaren": "marga Karo",
+      "kukut": "kumpul / koleksi",
+      "kedun": "lusa",
+      "kune": "mengapa / kenapa",
+      "kusuk": "pegang / genggam",
+    
+      // === HURUF L ===
+      "lawes": "pergi",
+      "leben": "duluan / terlebih dahulu",
+      "lawas": "luas / lapang",
+      "ledeng": "kerang air",
+      "lamis": "bohong / dusta",
+      "limbang": "mandi di sungai",
+      "leur": "lebih / melebihi",
+      "lelem": "lembab",
+      "leja": "ejek / olok-olok",
+      "lau": "air / sungai",
+      "lanjar": "lurus / panjang",
+      "lang": "tidak / bukan",
+      "lam": "semakin / lebih",
+      "lanan": "lahan / tanah",
+      "lanting": "lenting / memantul",  
+      // === HURUF M ===
+      "mejuah-juah": "salam / sejahtera (setara 'Horas' di Karo)",
+    "mangan": "makan",
+    "mandu": "mandi",
+    "mule": "pulang",
+    "melihe": "lapar / ingin makan",
+    "mejile": "lapar / ingin makan",
+    "muas": "haus",
+    "merhat": "ingin / mau",
+    "mbak": "rumah",
+    "mbaru": "rumah",
+    "mbuat": "membuat",
+    "mberu": "anak perempuan (berasal dari 'beru/boru')",
+    "melas": "sedih / kasihan / panas",
+    "mbelin": "besar / agung",
+    "mbusuk": "wangi / berbau",
+    "mpusuk": "wangi / berbau",
+    "mbit": "warna / tekstur",
+    "mbiring": "warna / tekstur",
+    "mbalin": "membawa kembali / mengembalikan",
+    "mbayu": "angin / berhembus",
+    "menda": "menangis",
+    "menangis": "menangis",
+    "mita": "melihat",
+    "mendap": "duduk",
+    "mpu": "menenangkan / membujuk",
+    "mpujuk": "menenangkan / membujuk",
+    "mbangun": "bangun",
+    "mbetah": "betah / nyaman",
+    "merang": "tidur / beristirahat",
+    "mbelgah": "terbuka / lapang",
+    "mbeluah": "matang / masak",
+  
+      // === HURUF N ===
+      "nggeluh": "hidup",
+    "ngelak": "haus",
+    "ngeteh": "minum teh",
+    "ngguah": "pergi / berangkat",
+    "ngerana": "namanya",
+    "ngerana si": "orang yang disebut",
+    "ngerana me": "namanya itu",
+    "ngeluhken": "menghidupi / menolong kehidupan",
+    "nggo": "sudah",
+    "ngelah": "punya / memiliki",
+    "ngenca di": "sebelah kiri",
+    "nggo ngenca": "sudah ke kiri",
+    "nggo ngenca ia": "dia sudah pergi ke kiri",
+    "gelak ku": "saya haus",
+    "ngelah rumah": "punya rumah",
+    "nggo man": "sudah untuk / sudah kepada",
+    "nggo tekap": "sudah datang",
+    "nggo pagi": "sudah pagi",
+    "ngelalak": "bersih",
+    "ngelas": "memesan / menyiapkan",
+    "ngeluari": "mengeluarkan",
+    "ngembah": "membawa / mengantar",
+    "ngenca / nginan": "kiri / kanan",
+    "ngelit": "mengambil sedikit",
+    "nggo pulung": "sudah selesai",
+  
+      // === HURUF O ===
+      "ola": "jangan",
+    "ope": "belum",
+    "oren": "warna jingga / oranye",
+    "olo": "mau / rela",
+    "ompu": "nenek / kakek",
+    "oja": "jangan",
+    "ojak": "tarik / menarik",
+    "osa": "satu",
+    "orah": "ratapan / sedih",
+    "oro": "jeritan tangis",
+    "ompungta": "leluhur kita",
+    "ote": "itu / sana",
+    "oto": "mobil",
+    "ompung": "kakek / nenek",
+    "omel": "mengeluh / banyak bicara",
+    "oro-oro": "tangis keras berturut-turut",
+    "ompuna": "milik leluhur",
+    "ojung": "pinggir / tepi",
+    "oja ku": "jangan aku",
+    "olo ku": "aku mau",
+  
+      // === HURUF P ===
+      "perkuah": "persaudaraan",
+    "pegeluhan": "kehidupan",
+    "pemena": "kepercayaan",
+    "perbibian": "saudara perempuan",
+    "pudun": "turun",
+    "palan": "bekal",
+    "pudak": "buka",
+    "perdahin": "permulaan",
+    "perjabun": "persahabatan",
+    "perubahan": "perubahan",
+  
+      // === HURUF R ===
+      "ralu": "cepat",
+    "ralang": "pinggir",
+    "rugu": "rugi",
+    "rih": "air",
+    "rimbang": "sayuran kecil hijau",
+    "rikut": "ikut",
+    "raras": "wangi",
+    "renda": "pelan-pelan",
+    "rebu": "pantangan",
+    "rendang": "duduk santai",
+
+    // === HURUF S ===
+    "sada": "satu",
+    "sasap": "pelan-pelan / perlahan",
+    "sada hari": "suatu hari",
+    "sangap": "hormat / mulia",
+    "sanga": "sembilan",
+    "sanga-sanga": "hampir / sekitar",
+    "simehulen": "orang miskin",
+    "sira": "garam",
+    "siang": "siang hari",
+    "singuda-nguda": "anak muda",
+    "simpang": "persimpangan / perempatan",
+    "sinteken": "tanda tangan",
+    "sintek": "tulisan / coretan",
+    "sipat": "sifat / perangai",
+    "sura-sura": "ucapan / perintah",
+
+    // === HURUF T ===
+    "taneh": "tanah",
+    "tulang": "paman / saudara laki-laki dari ibu",
+    "tutur": "silsilah / garis keturunan",
+    "turi-turin": "cerita / dongeng",
+    "tabe-tabe": "permisi / maaf",
+    "taneh karo": "tanah karo / daerah asal",
+    "tengah": "tengah / pertengahan",
+    "tutur kita": "garis keturunan kita",
+    "tedeh": "duduk / beristirahat",
+    "tading": "dingin / sejuk",
+    "timbang": "ukur / bandingkan",
+    "turi": "cerita / kisah",
+    "tulan": "tulang (anatomi tubuh)",
+    "tutur si waluh jabu": "sistem kekerabatan adat karo",
+    "taneh entek": "tanah subur",
+
+    // === HURUF U ===
+    "ula": "jangan",
+    "ula-ula": "binatang ular",
+    "udan": "hujan",
+    "uga": "juga",
+    "utan": "huta",
+    "ujur": "jujur / tulus",
+    "ula kita": "jangan kita",
+    "uban": "rambut putih",
+    "umak": "ibu",
+    "umat": "sekelompok orang / jemaat",
+    "ura-ura": "cerita / kabar",
+    "ukur": "mengukur / menakar",
+    "uis gara": "kain adat khas karo",
+
+    // === HURUF W ===
+    "wakil": "wakil",
+    "wang": "uang",
+    "warna": "warna",
+    "waluh": "labu"
+    }
+  };
+  </script>
+  <script>
+let currentLang = '';
+
+// === NAVIGASI ===
+function showDictionary(lang) {
+  currentLang = lang;
+  document.getElementById('languageSelection').style.display = 'none';
+  ['Toba', 'Karo', 'Simalungun'].forEach(d => {
+    document.getElementById(`dictionary${d}`).style.display = lang === d.toLowerCase() ? 'block' : 'none';
+  });
+
+  // Bersihkan dulu
+  document.getElementById(`search${capitalize(lang)}`).value = '';
+  document.getElementById(`searchResult${capitalize(lang)}`).innerHTML = '';
+
+  // Render filter + tampilkan SEMUA kata setelah DOM siap
+  renderAlphabetFilter(lang);
+  setTimeout(() => filterWords(lang, ''), 0); // Pastikan DOM sudah ada
+}
+
+function goBack() {
+  document.querySelectorAll('.dictionary-page').forEach(el => el.style.display = 'none');
+  document.getElementById('languageSelection').style.display = 'block';
+}
+
+// === PENCARIAN (Batak atau Indonesia) ===
+function searchWord(lang) {
+  const query = document.getElementById(`search${capitalize(lang)}`).value.trim().toLowerCase();
+  const resultBox = document.getElementById(`searchResult${capitalize(lang)}`);
+  const dict = dictionaries[lang];
+
+  if (query === '') {
+    resultBox.innerHTML = '';
+    filterWords(lang, '');
+    return;
+  }
+
+  const matches = Object.entries(dict).filter(([batak, arti]) =>
+    batak.toLowerCase().includes(query) || arti.toLowerCase().includes(query)
+  );
+
+  if (matches.length > 0) {
+    resultBox.innerHTML = matches.map(([batak, arti]) => `
+      <div class="search-result">
+        <strong style="color:var(--batak-red);">${capitalizeFirst(batak)}</strong> → 
+        <strong>${capitalizeFirst(arti)}</strong>
+      </div>
+    `).join('');
+  } else {
+    resultBox.innerHTML = `<div class="search-result" style="background:#ffebee; border-left-color:#c62828;">
+      Kata "<strong>${query}</strong>" tidak ditemukan.
+    </div>`;
+  }
+
+  // Kosongkan daftar utama + nonaktifkan tombol huruf
+  document.getElementById(`wordList${capitalize(lang)}`).innerHTML = '';
+  document.querySelectorAll(`#alpha${capitalize(lang)} .alpha-btn`).forEach(b => b.classList.remove('active'));
+}
+
+// === RENDER CARD (Batak dulu, merah) ===
+function renderWordCard(batak, arti) {
+  return `
+    <div class="word-card">
+      <div class="word-batak" style="color:var(--batak-red); font-weight:bold;">${capitalizeFirst(batak)}</div>
+      <div class="word-indo">→ ${capitalizeFirst(arti)}</div>
+    </div>
+  `;
+}
+
+// === FILTER & RENDER (berdasarkan huruf Batak) ===
+function filterWords(lang, letter) {
+  const wordList = document.getElementById(`wordList${capitalize(lang)}`);
+  if (!wordList) return; // Pastikan elemen ada
+
+  const dict = dictionaries[lang];
+  const words = Object.entries(dict);
+
+  const searchInput = document.getElementById(`search${capitalize(lang)}`).value.trim();
+  if (searchInput !== '') return;
+
+  let filtered = letter === ''
+    ? words
+    : words.filter(([batak]) => batak.toUpperCase().startsWith(letter));
+
+  filtered.sort((a, b) => a[0].localeCompare(b[0]));
+
+  // Update tombol aktif
+  document.querySelectorAll(`#alpha${capitalize(lang)} .alpha-btn`).forEach(btn => {
+    btn.classList.toggle('active',
+      (letter === '' && btn.textContent === 'SEMUA') ||
+      btn.textContent === letter
+    );
+  });
+
+  if (filtered.length === 0) {
+    wordList.innerHTML = `<div class="no-words">Tidak ada kata untuk huruf <strong>${letter || 'SEMUA'}</strong>.</div>`;
+    return;
+  }
+
+  wordList.innerHTML = filtered.map(([batak, arti]) => renderWordCard(batak, arti)).join('');
+}
+
+// === RENDER FILTER HURUF (berdasarkan Batak) ===
+function renderAlphabetFilter(lang) {
+  const container = document.getElementById(`alpha${capitalize(lang)}`);
+  container.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'alpha-btn active';
+  allBtn.textContent = 'SEMUA';
+  allBtn.onclick = () => {
+    document.getElementById(`search${capitalize(lang)}`).value = '';
+    document.getElementById(`searchResult${capitalize(lang)}`).innerHTML = '';
+    filterWords(lang, '');
+  };
+  container.appendChild(allBtn);
+
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  letters.forEach(letter => {
+    if (Object.keys(dictionaries[lang]).some(batak => batak.toUpperCase().startsWith(letter))) {
+      const btn = document.createElement('button');
+      btn.className = 'alpha-btn';
+      btn.textContent = letter;
+      btn.onclick = () => filterWords(lang, letter);
+      container.appendChild(btn);
+    }
+  });
+}
+
+// === UTILS ===
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function capitalizeFirst(str) {
+  return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+  </script>
+</body>
+</html>
